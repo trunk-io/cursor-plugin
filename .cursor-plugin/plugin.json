@@ -1,0 +1,15 @@
+{
+  "name": "trunk",
+  "displayName": "Trunk Flaky Tests",
+  "version": "0.1.0",
+  "description": "Flaky test detection, root cause analysis, and fix suggestions for development teams.",
+  "author": {
+    "name": "Trunk",
+    "email": "support@trunk.io"
+  },
+  "license": "MIT",
+  "keywords": ["cursor", "plugin", "mcp", "testing", "flaky-tests", "ci"],
+  "logo": "assets/logo.svg",
+  "homepage": "https://trunk.io",
+  "repository": "https://github.com/trunk-io/cursor-plugin"
+}
