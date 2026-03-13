@@ -4,12 +4,35 @@ Flaky test detection, root cause analysis, and fix suggestions for development t
 
 ## What it does
 
-This plugin connects Cursor to the [Trunk Flaky Tests](https://trunk.io) MCP server, giving you access to:
+This plugin connects Cursor to the [Trunk Flaky Tests](https://trunk.io) MCP server, giving you AI-powered tools, commands, and built-in knowledge for debugging and fixing flaky tests.
+
+### MCP Tools
 
 | Tool                  | Description                                                      |
 | --------------------- | ---------------------------------------------------------------- |
 | `fix-flaky-test`      | Retrieve root cause analysis and fix suggestions for flaky tests |
 | `setup-trunk-uploads` | Generate a setup plan to upload test results to Trunk            |
+
+### Commands
+
+| Command          | Description                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `fix-flaky`      | Get root cause analysis and apply a fix for a flaky test     |
+| `why-flaky`      | Explain why a test is flaky without making changes           |
+| `setup-uploads`  | Set up test result uploads to Trunk for your repository      |
+
+### Skills
+
+| Skill                  | Description                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| `flaky-test-patterns`  | Common flaky test patterns and fixes — activates when debugging or writing tests     |
+| `trunk-ci-setup`       | CI pipeline best practices for test uploads — activates when editing CI config files |
+
+### Rules
+
+| Rule                     | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `flaky-test-awareness`   | Contextual awareness when editing test files — suggests Trunk tools when relevant |
 
 ## Install
 
