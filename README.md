@@ -56,7 +56,10 @@ The Trunk MCP server uses **OAuth 2.0 + OpenID Connect**. When you first connect
 
 - [Trunk Flaky Tests docs](https://docs.trunk.io/flaky-tests)
 - [MCP server docs](https://docs.trunk.io/flaky-tests/use-mcp-server)
-- [Cursor setup guide](https://docs.trunk.io/flaky-tests/use-mcp-server/configuration/cursor-ide)
+- [Cursor setup guide](https://docs.trunk.io/flaky-tests/reference/mcp-reference/configuration/cursor-ide)
+
+
+
 
 ## Also Available For
 
