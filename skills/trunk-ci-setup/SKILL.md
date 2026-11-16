@@ -24,25 +24,51 @@ Always configure the output path explicitly rather than relying on defaults — 
 
 ## Trunk Analytics Uploader
 
-After tests run, upload results using the `trunk-analytics-cli`:
+After tests run, upload results to Trunk. Every upload names three things: the organization slug, the organization token, and the ID of the [test collection](https://docs.trunk.io/flaky-tests/test-collections) the results belong to. The collection ID is eight alphanumeric characters, shown on the collection's page in Trunk (**Flaky Tests** → **Collections**). It is not a secret, and a job that uploads to a different collection uses a different ID.
+
+### GitHub Actions (recommended)
+
+Use the official `trunk-io/analytics-uploader` action. It downloads the CLI for you, so there's no binary URL to keep current:
+
+```yaml
+- name: Upload test results to Trunk
+  if: ${{ !cancelled() }}   # upload even when tests fail — critical for flaky data
+  continue-on-error: true   # an upload hiccup shouldn't fail the build
+  uses: trunk-io/analytics-uploader@v2
+  with:
+    junit-paths: path/to/reports/**/*.xml
+    org-slug: <your-org>
+    test-collection-id: <your-collection-id>
+    token: ${{ secrets.TRUNK_TOKEN }}
+```
+
+### Other CI providers (manual CLI)
+
+Where the action isn't available, download the CLI from the GitHub releases page and run `upload`:
 
 ```bash
-# Install (one-time, add to CI)
-curl -fsSL https://trunk.io/releases/analytics-cli/latest/trunk-analytics-cli-linux-x86_64.tar.gz | tar xz
+# Install (one-time, add to CI). Pick the asset for your runner's platform:
+#   Linux x86_64:  trunk-analytics-cli-x86_64-unknown-linux.tar.gz
+#   Linux arm64:   trunk-analytics-cli-aarch64-unknown-linux.tar.gz
+#   macOS arm64:   trunk-analytics-cli-aarch64-apple-darwin.tar.gz
+#   macOS x86_64:  trunk-analytics-cli-x86_64-apple-darwin.tar.gz
+curl -fsSL https://github.com/trunk-io/analytics-cli/releases/latest/download/trunk-analytics-cli-x86_64-unknown-linux.tar.gz | tar xz
 
 # Upload
-trunk-analytics-cli upload \
+./trunk-analytics-cli upload \
   --org-url-slug <your-org> \
+  --test-collection-id <your-collection-id> \
   --token $TRUNK_TOKEN \
   --junit-paths "path/to/reports/**/*.xml"
 ```
 
-The `TRUNK_TOKEN` should be stored as a CI secret, never hardcoded.
+The `TRUNK_TOKEN` should be stored as a CI secret, never hardcoded. Use the organization token, not a repo token.
 
 ## CI Provider Tips
 
 ### GitHub Actions
-- Use `if: always()` on the upload step so results are uploaded even when tests fail — this is critical for capturing flaky test data.
+- Prefer the `trunk-io/analytics-uploader@v2` action (see above) over a hand-rolled CLI download — it stays current with releases.
+- Use `if: ${{ !cancelled() }}` (or `if: always()`) on the upload step so results are uploaded even when tests fail — this is critical for capturing flaky test data.
 - The test and upload steps should be in the same job to share the filesystem.
 
 ### CircleCI
@@ -60,12 +86,15 @@ The `TRUNK_TOKEN` should be stored as a CI secret, never hardcoded.
 ## Common Mistakes
 
 - **Not uploading on test failure:** If the upload step only runs when tests pass, you'll never capture flaky test data. Always use `if: always()` / `when: always`.
-- **Wrong glob pattern:** Double-check the JUnit XML path matches what the test framework actually produces.
+- **Wrong glob pattern:** Double-check the JUnit XML path matches what the test framework actually produces. Use `ls` or `find` in CI to verify before the upload step.
+- **Missing collection ID:** Uploads are routed by test collection. Pass `test-collection-id` (action), `--test-collection-id` (CLI) or `TRUNK_TEST_COLLECTION_ID` (env var) alongside the org slug — it is an addition to the slug, not a replacement.
 - **Missing token:** The `TRUNK_TOKEN` must be set as a CI secret. Check the Trunk dashboard at https://app.trunk.io for your org's token.
 - **Multiple XML files:** Some frameworks produce one XML per test suite. Use glob patterns (`**/*.xml`) to capture all of them.
 
 ## Documentation
 
-- Full setup guide: https://docs.trunk.io/flaky-tests/use-mcp-server/mcp-tool-reference/set-up-test-uploads
-- Flaky Tests overview: https://docs.trunk.io/flaky-tests
-- CI configuration examples: https://docs.trunk.io/flaky-tests
+- GitHub Actions setup: https://docs.trunk.io/flaky-tests/get-started/ci-providers/github-actions
+- Test collections: https://docs.trunk.io/flaky-tests/test-collections
+- Analytics CLI reference: https://docs.trunk.io/flaky-tests/reference/cli-reference
+- Set up test uploads (MCP): https://docs.trunk.io/flaky-tests/reference/mcp-reference/set-up-test-uploads
+- Flaky Tests overview: https://docs.trunk.io/flaky-tests/overview
